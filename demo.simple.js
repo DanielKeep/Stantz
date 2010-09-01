@@ -6,7 +6,7 @@ stantz.onImportsComplete
 (
     function()
     {
-        console.info('Running document script');
+        console.info('Running document script (simple)');
 
         var canvas = $('#output')[0];
         console.info('Canvas is: %o', canvas);

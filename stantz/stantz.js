@@ -8,10 +8,30 @@ stantz._importCallbacks = [];
 
 if( this.console == UNDEF )
 {
-    var console =
+    if( this.document )
     {
-        info: function(msg) {},
-    };
+        var console =
+        {
+            info: function() {},
+        };
+    }
+    else
+    {
+        var console =
+        {
+            info: function()
+            {
+                var args = [];
+                for( var i=0; i<arguments.length; ++i )
+                    args[i] = arguments[i];
+                postMessage
+                ({
+                    type: 'console.info',
+                    args: args,
+                });
+            },
+        };
+    }
 }
 
 stantz._importProcessCallbacks = function()
@@ -36,8 +56,6 @@ stantz._importProcessCallbacks = function()
             callbacks[i]();
     }
 }
-
-console.info('document: %o', this.document);
 
 if( this.document )
 {
@@ -74,7 +92,7 @@ if( this.document )
 
         script.onreadystatechange = function()
         {
-            if( js.readyState == 'complete')
+            if( script.readyState == 'complete')
                 onDone();
         };
 
@@ -110,10 +128,9 @@ else
     }
 }
 
-stantz.objects = {};
-
+stantz.lights = {};
 stantz.materials = {};
-
+stantz.objects = {};
 stantz.renderers = {};
 
 stantz.mkObj = function(obj, properties)
@@ -127,5 +144,6 @@ stantz.mkObj = function(obj, properties)
 };
 
 stantz.importScripts('ray', 'rgba', 'v3');
-stantz.importScripts('materials', 'objects', 'output', 'renderers', 'scene');
+stantz.importScripts('lights', 'materials', 'objects',
+                     'output', 'renderers', 'scene');
 
