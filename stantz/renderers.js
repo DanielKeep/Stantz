@@ -30,7 +30,7 @@ stantz.renderers.raytrace =
 
         // figure out camera vectors
         var fovRad = (Math.PI*cam.fov/180) / 2;
-        var vMid = (camForward).mul(cam.zNear);
+        var vMid = camForward;
         var fovH = fovRad;
         var fovV = fovRad/params.width*params.height;
 

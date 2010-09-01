@@ -13,7 +13,6 @@ stantz.Scene = function()
         right:      v3(1,0,0),
         up:         v3(0,1,0),
         fov:        90,
-        zNear:      1.0,
     };
     this.objects = [];
 };
@@ -45,7 +44,6 @@ stantz.Scene.prototype =
                 right: this.camera.right.toJson(),
                 up: this.camera.up.toJson(),
                 fov: this.camera.fov,
-                zNear: this.camera.zNear,
             });
 
         for( var i=0; i<this.objects.length; ++i )
@@ -82,7 +80,6 @@ stantz.Scene.fromJson = function(json)
             right: v3.fromJson(json.camera.right),
             up: v3.fromJson(json.camera.up),
             fov: json.camera.fov,
-            zNear: json.camera.zNear,
         });
 
     for( var i=0; i<json.objects.length; ++i )
