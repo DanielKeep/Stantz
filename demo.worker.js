@@ -69,6 +69,10 @@ stantz.onImportsComplete
                 renderTile(event.target);
                 tileDone(event.data.tile);
             }
+            else if( event.data.type == 'console.info' )
+            {
+                console.info.apply(console, event.data.args);
+            }
         };
 
         var workers = [];

@@ -8,10 +8,30 @@ stantz._importCallbacks = [];
 
 if( this.console == UNDEF )
 {
-    var console =
+    if( this.document )
     {
-        info: function(msg) {},
-    };
+        var console =
+        {
+            info: function() {},
+        };
+    }
+    else
+    {
+        var console =
+        {
+            info: function()
+            {
+                var args = [];
+                for( var i=0; i<arguments.length; ++i )
+                    args[i] = arguments[i];
+                postMessage
+                ({
+                    type: 'console.info',
+                    args: args,
+                });
+            },
+        };
+    }
 }
 
 stantz._importProcessCallbacks = function()
