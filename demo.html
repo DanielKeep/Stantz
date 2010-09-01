@@ -5,6 +5,10 @@
     <script type="text/javascript" src="jquery/jquery.js"></script>
     <script type="text/javascript" src="stantz/stantz.js"></script>
     <script type="text/javascript" src="scene.js"></script>
+
+    <link id="bespin_base" href="bespin">
+    <link rel="stylesheet" type="text/css" href="bespin/BespinEmbedded.css">
+    <script type="text/javascript" src="bespin/BespinEmbedded.js"></script>
 </head>
 <body>
     <h1>Stantz Demo</h1>
@@ -12,28 +16,35 @@
     <p>Scene JSON source:
         <input id="renderScene" type="button" value="Re-render">
         <span id="renderStatus">Rendering...</span></p>
-    <p><textarea id="sceneSrc" rows='10' cols='60'></textarea></p>
+
+    <div id="sceneSrc" style="height: 20em; width: 95%;"></div>
 
     <!--<script type="text/javascript" src="demo.simple.js"></script>-->
     <script type="text/javascript" src="demo.worker.js"></script>
 
     <script type="text/javascript">
 
-        $(document).ready(
-        stantz.onImportsComplete
-        (
-            function()
+        var editor;
+
+        window.onBespinLoad = function()
+        {
+            console.info("Installing bespin with %o", bespin.useBespin);
+            bespin.useBespin($("#sceneSrc")[0],
             {
-                var sceneSrc = JSON.stringify(scene.toJson(), null, 2);
-                $("#sceneSrc")[0].value = sceneSrc;
+                syntax: "js",
             }
-        ));
+            ).then(function(env)
+            {
+                editor = env.editor;
+                editor.value = JSON.stringify(scene.toJson(), null, 2);
+            });
+        };
 
         $("#renderScene").click
         (
             function()
             {
-                var sceneSrc = JSON.parse($("#sceneSrc")[0].value);
+                var sceneSrc = JSON.parse(editor.value);
                 scene = stantz.Scene.fromJson(sceneSrc);
                 $("#renderStatus").html("Rendering...");
                 renderScene();
