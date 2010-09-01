@@ -140,3 +140,43 @@ stantz.objects.sphere.prototype =
     },
 };
 
+/*
+ * Plane.
+ */
+
+stantz.objects.plane = function()
+{
+    this.material = stantz.materials['default'];
+    this.normal = stantz.v3.Y;
+};
+
+stantz.objects.plane.prototype =
+{
+    __proto__: stantz.object.prototype,
+    _aliasName: 'plane',
+
+    intersectRay: function(ray)
+    {
+        var Pn = this.normal;
+        var Po = this.localToWorld(stantz.v3.ZERO);
+        var D = -(Pn).dot(Po);
+        var R0 = ray.v0;
+        var Rd = ray.vd;
+        var Vd = (Pn).dot(Rd);
+
+        // Use ( Vd == 0 ) to change to two-sided planes
+        if( Vd == 0 )
+            return null;
+
+        var V0 = -(Vd + D);
+        var t = V0 / Vd;
+
+        if( t < 0 )
+            return null;
+
+        var Pi = (R0).add((Rd).mul(t));
+
+        return {'i':Pi,'n':Pn};
+    },
+};
+
