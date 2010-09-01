@@ -8,7 +8,7 @@ stantz.onImportsComplete
 
         var canvas = $('#output')[0];
         var sceneJson = scene.toJson();
-        var tileSize = 256;
+        var tileSize = 64;
         var nextTile = 0;
         var renderer = 'raytrace';
         var multisample = 4;
@@ -66,8 +66,8 @@ stantz.onImportsComplete
         {
             if( event.data.type == 'tile' )
             {
-                tileDone(event.data.tile);
                 renderTile(event.target);
+                tileDone(event.data.tile);
             }
         };
 
