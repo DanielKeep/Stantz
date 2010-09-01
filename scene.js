@@ -13,6 +13,7 @@ function setScene()
     var solid = stantz.materials.solid;
     var normal = stantz.materials.normal;
     var diffuse = stantz.materials.diffuse;
+    var coordGrid = stantz.materials.coordGrid;
     var point = stantz.lights.point;
 
     scene = new stantz.Scene;
@@ -48,7 +49,7 @@ function setScene()
         {
             transform:  v3(1,-1,-1),
             scale:      1.0,
-            material:   new solid(rgba(0,0,1)),
+            material:   new coordGrid(4),
         }),
     ];
 

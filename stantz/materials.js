@@ -197,3 +197,29 @@ stantz.materials.normal.prototype =
     },
 };
 
+/*
+ * Coordinate grid material.
+ */
+
+stantz.materials.coordGrid = function(scale)
+{
+    this.scale = scale || 1.0;
+};
+
+stantz.materials.coordGrid.prototype =
+{
+    __proto__: stantz.material.prototype,
+    _aliasName: 'coordGrid',
+
+    shade: function(i, s)
+    {
+        var vI = i.i;
+        var mod = function(x,y) { return x - y * Math.floor(x/y); };
+
+        return stantz.rgba(
+                mod(vI.x * this.scale, 1.0),
+                mod(vI.y * this.scale, 1.0),
+                mod(vI.z * this.scale, 1.0));
+    },
+};
+
