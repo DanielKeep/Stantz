@@ -146,9 +146,9 @@ stantz.materials.normal.prototype =
     __proto__: stantz.material.prototype,
     _aliasName: 'normal',
 
-    shade: function(args)
+    shade: function(i)
     {
-        var vN = args.n;
+        var vN = i.n;
         return stantz.rgba(
                 0.5+vN.x/2,
                 0.5+vN.y/2,

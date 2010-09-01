@@ -4,7 +4,7 @@ stantz.onImportsComplete
 (
     function()
     {
-        console.info('Running document script');
+        console.info('Running document script (worker)');
 
         var canvas = $('#output')[0];
         var sceneJson = scene.toJson();

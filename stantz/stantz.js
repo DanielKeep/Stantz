@@ -57,8 +57,6 @@ stantz._importProcessCallbacks = function()
     }
 }
 
-console.info('document: %o', this.document);
-
 if( this.document )
 {
     console.info('using document importing');
@@ -130,10 +128,8 @@ else
     }
 }
 
-stantz.objects = {};
-
 stantz.materials = {};
-
+stantz.objects = {};
 stantz.renderers = {};
 
 stantz.mkObj = function(obj, properties)
@@ -147,5 +143,6 @@ stantz.mkObj = function(obj, properties)
 };
 
 stantz.importScripts('ray', 'rgba', 'v3');
-stantz.importScripts('materials', 'objects', 'output', 'renderers', 'scene');
+stantz.importScripts('lights', 'materials', 'objects',
+                     'output', 'renderers', 'scene');
 

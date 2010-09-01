@@ -22,7 +22,6 @@ stantz.Rgba.prototype =
 
     dup: function()
     {
-        return new stantz.Rgba(this.r, this.g, this.b, this.a);
     },
 
     toJson: function()
