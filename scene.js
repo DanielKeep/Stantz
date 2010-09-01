@@ -23,7 +23,13 @@ function setScene()
         {
             transform:  v3(0,3,0),
             radius:     1.0,
-            color:      rgba.WHITE,
+            color:      rgba(1,0,0),
+        }),
+        mkObj(new point(),
+        {
+            transform:  v3(0,-1,0),
+            radius:     1.0,
+            color:      rgba(0,0,1),
         }),
         mkObj(new sphere(),
         {
@@ -36,7 +42,7 @@ function setScene()
         {
             transform:  v3(-1,1,1),
             scale:      1.0,
-            material:   new diffuse(rgba(1,0,0)),
+            material:   new diffuse(rgba(1,1,1)),
         }),
         mkObj(new sphere(),
         {
