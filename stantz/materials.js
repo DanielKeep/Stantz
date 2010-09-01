@@ -54,6 +54,28 @@ stantz.material.prototype =
 
         return json;
     },
+
+    illumFromLight: function(light, i, s)
+    {
+        var vToLight = light.vectorToLightFrom(i.i);
+        
+        var normDot = (vToLight.unit()).dot(i.n);
+        if( normDot <= 0 )
+            return null;
+
+        normDot = this.surfLightShadeAdjust(normDot);
+
+        var lightColor = light.lightAt(i, s);
+        if( lightColor == null )
+            return null;
+
+        return lightColor.mulRGB(normDot);
+    },
+
+    surfLightShadeAdjust: function(shade)
+    {
+        return shade;
+    },
 };
 
 stantz.material.fromJson = function(json)
@@ -154,18 +176,9 @@ stantz.materials.diffuse.prototype =
         for( var j=0; j<s.lights.length; ++j )
         {
             var light = s.lights[j];
-            var lightPos = light.localToWorld(stantz.v3.ZERO);
-            var lightDistSq = ( (lightPos).sub(i.i) ).magSq();
-            
-            var ray = stantz.rayFromTo(i.i, lightPos);
-            var inter = s.castRay(ray, lightDistSq);
-
-            if( inter.obj == null )
-            {
-                var scale = 1/lightDistSq;
-                var lightColor = (light.color).mulRGB(scale);
+            var lightColor = this.illumFromLight(light, i, s);
+            if( lightColor != null )
                 lightSum = (lightSum).blend('add', lightColor);
-            }
         }
 
         var color = (lightSum).blend('multiply', this.color);

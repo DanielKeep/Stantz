@@ -106,6 +106,7 @@ stantz.object.fromJson = function(json)
 stantz.objects.sphere = function()
 {
     this.material = stantz.materials['default'];
+    this.radius = 1.0;
 };
 
 stantz.objects.sphere.prototype =
@@ -117,7 +118,7 @@ stantz.objects.sphere.prototype =
     {
         var vd = ray.vd;
         var vc = this.localToWorld(stantz.v3.ZERO); // center of sphere
-        var R = this.localToWorldScale(1.0);        // radius of sphere
+        var R = this.localToWorldScale(this.radius);// radius of sphere
 
         var a = vd.magSq();
         var b = ((vd).mul(2)).dot((ray.v0).sub(vc));
@@ -136,6 +137,46 @@ stantz.objects.sphere.prototype =
             var vN = ((vI).sub(vc)).unit();
             return {'i':vI,'n':vN};
         }
+    },
+};
+
+/*
+ * Plane.
+ */
+
+stantz.objects.plane = function()
+{
+    this.material = stantz.materials['default'];
+    this.normal = stantz.v3.Y;
+};
+
+stantz.objects.plane.prototype =
+{
+    __proto__: stantz.object.prototype,
+    _aliasName: 'plane',
+
+    intersectRay: function(ray)
+    {
+        var Pn = this.normal;
+        var Po = this.localToWorld(stantz.v3.ZERO);
+        var D = -(Pn).dot(Po);
+        var R0 = ray.v0;
+        var Rd = ray.vd;
+        var Vd = (Pn).dot(Rd);
+
+        // Use ( Vd == 0 ) to change to two-sided planes
+        if( Vd == 0 )
+            return null;
+
+        var V0 = -(Vd + D);
+        var t = V0 / Vd;
+
+        if( t < 0 )
+            return null;
+
+        var Pi = (R0).add((Rd).mul(t));
+
+        return {'i':Pi,'n':Pn};
     },
 };
 
