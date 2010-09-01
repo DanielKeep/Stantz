@@ -12,11 +12,19 @@ function setScene()
     var sphere = stantz.objects.sphere;
     var solid = stantz.materials.solid;
     var normal = stantz.materials.normal;
+    var diffuse = stantz.materials.diffuse;
+    var point = stantz.lights.point;
 
     scene = new stantz.Scene;
 
     scene.objects =
     [
+        mkObj(new point(),
+        {
+            transform:  v3(0,3,0),
+            radius:     1.0,
+            color:      rgba.WHITE,
+        }),
         mkObj(new sphere(),
         {
             transform:  v3(0,0,0),
@@ -28,7 +36,7 @@ function setScene()
         {
             transform:  v3(-1,1,1),
             scale:      1.0,
-            material:   new solid(rgba(1,0,0)),
+            material:   new diffuse(rgba(1,0,0)),
         }),
         mkObj(new sphere(),
         {

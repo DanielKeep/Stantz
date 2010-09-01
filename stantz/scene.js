@@ -49,7 +49,13 @@ stantz.Scene.prototype =
             });
 
         for( var i=0; i<this.objects.length; ++i )
-            json.objects[i] = this.objects[i].toJson();
+        {
+            json.objects[i] =
+            {
+                baseType: this.objects[i]._baseType,
+                json: this.objects[i].toJson(),
+            };
+        }
 
         return json;
     },
@@ -80,7 +86,10 @@ stantz.Scene.fromJson = function(json)
         });
 
     for( var i=0; i<json.objects.length; ++i )
-        scene.objects[i] = stantz.object.fromJson(json.objects[i]);
+    {
+        var baseType = json.objects[i].baseType;
+        scene.objects[i] = stantz[baseType].fromJson(json.objects[i].json);
+    }
 
     return scene;
 };

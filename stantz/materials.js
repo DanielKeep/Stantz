@@ -127,11 +127,52 @@ stantz.materials.solid.prototype =
     __proto__: stantz.material.prototype,
     _aliasName: 'solid',
 
-    shade: function(args)
+    shade: function(i, s)
     {
         return this.color;
     },
 };
+
+/*
+ * Diffuse material.
+ */
+
+stantz.materials.diffuse = function(color)
+{
+    this.color = color;
+};
+
+stantz.materials.diffuse.prototype =
+{
+    __proto__: stantz.material.prototype,
+    _aliasName: 'diffuse',
+
+    shade: function(i, s)
+    {
+        var lightSum = stantz.rgba.BLACK;
+
+        for( var j=0; j<s.lights.length; ++j )
+        {
+            var light = s.lights[j];
+            var lightPos = light.localToWorld(stantz.v3.ZERO);
+            var lightDistSq = ( (lightPos).sub(i.i) ).magSq();
+            
+            var ray = stantz.rayFromTo(i.i, lightPos);
+            var inter = s.castRay(ray, lightDistSq);
+
+            if( inter.obj == null )
+            {
+                var scale = 1/lightDistSq;
+                var lightColor = (light.color).mulRGB(scale);
+                lightSum = (lightSum).blend('add', lightColor);
+            }
+        }
+
+        var color = (lightSum).blend('multiply', this.color);
+
+        return color;
+    },
+}
 
 /*
  * Normal material.

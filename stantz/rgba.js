@@ -22,11 +22,35 @@ stantz.Rgba.prototype =
 
     dup: function()
     {
+        return stantz.rgba(this.r, this.g, this.b, this.a);
     },
 
     toJson: function()
     {
         return [this.r, this.g, this.b, this.a];
+    },
+
+    blendOps:
+    {
+        add: function(l,r)
+        {
+            return stantz.rgba(l.r+r.r, l.g+r.g, l.b+r.b, l.a+r.a);
+        },
+
+        multiply: function(l,r)
+        {
+            return stantz.rgba(l.r*r.r, l.g*r.g, l.b*r.b, l.a*r.a);
+        },
+    },
+
+    blend: function(op, rhs)
+    {
+        return this.blendOps[op](this, rhs);
+    },
+
+    mulRGB: function(rhs)
+    {
+        return stantz.rgba(this.r*rhs, this.g*rhs, this.b*rhs, this.a);
     },
 };
 
@@ -61,4 +85,5 @@ stantz.rgba.averageOf = function(pxs)
 };
 
 stantz.rgba.BLACK = stantz.rgba(0,0,0,1);
+stantz.rgba.WHITE = stantz.rgba(1,1,1,1);
 

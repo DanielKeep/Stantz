@@ -79,12 +79,22 @@ stantz.renderers.raytrace =
 
         // TODO: transform and scale all objects
 
-        // build list of objects
+        // build list of objects and lights
         var objs = [];
+        var lights = [];
 
         for( var i=0; i<scene.objects.length; ++i )
         {
-            objs[objs.length] = scene.objects[i];
+            var obj = scene.objects[i];
+
+            if( obj._baseType == 'object' )
+                objs[objs.length] = obj;
+
+            else if( obj._baseType == 'light' )
+                lights[lights.length] = obj;
+
+            else
+                throw "unknown object type '"+obj._baseType+"'";
         }
 
         // raycast pixels
@@ -108,6 +118,35 @@ stantz.renderers.raytrace =
         var tileW = params.tileW;
         var tileH = params.tileH;
         
+        var castRay = function(ray, limitSq)
+        {
+            if( limitSq == UNDEF )
+                limitSq = (1.0/0.0);
+
+            var iObj = null, iDist = limitSq, iInfo;
+
+            for( var i=0; i<objs.length; ++i )
+            {
+                var obj = objs[i];
+                var iTmp = obj.intersectRay(ray);
+
+                if( iTmp != null )
+                {
+                    var dist = ( (iTmp.i).sub(camCenter) ).magSq();
+                    if( dist < iDist )
+                    {
+                        iObj = obj;
+                        iDist = dist;
+                        iInfo = iTmp;
+                    }
+                }
+            }
+
+            return {'obj':iObj, 'dist':iDist, 'info':iInfo};
+        };
+
+        var sceneObjs = {'objects':objs,'lights':lights,'castRay':castRay};
+
         for( var y=tileY; y<tileY+tileH; ++y )
         for( var x=tileX; x<tileX+tileW;  ++x )
         {
@@ -119,30 +158,13 @@ stantz.renderers.raytrace =
                 var vP = vPBase.add(vPOff[z]);
                 var ray = stantz.rayFromTo(camCenter, vP);
 
-                var iObj = null, iDist = (1.0/0.0), iInfo;
+                var inter = castRay(ray);
 
-                for( var i=0; i<objs.length; ++i )
-                {
-                    var obj = objs[i];
-                    var iTmp = obj.intersectRay(ray);
-                    
-                    if( iTmp != null )
-                    {
-                        var dist = ( (iTmp.i).sub(camCenter) ).magSq();
-                        if( dist < iDist )
-                        {
-                            iObj = obj;
-                            iDist = dist;
-                            iInfo = iTmp;
-                        }
-                    }
-                }
-
-                if( iObj == null )
+                if( inter.obj == null )
                     px[z] = scene.background;
 
                 else
-                    px[z] = iObj.material.shade(iInfo);
+                    px[z] = inter.obj.material.shade(inter.info, sceneObjs);
             }
 
             var pxAvg = stantz.rgba.averageOf(px);

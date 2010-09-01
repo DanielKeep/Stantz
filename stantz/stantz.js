@@ -128,6 +128,7 @@ else
     }
 }
 
+stantz.lights = {};
 stantz.materials = {};
 stantz.objects = {};
 stantz.renderers = {};
