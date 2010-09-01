@@ -1,8 +1,10 @@
 
 var UNDEF;
 
-var _importWaiting = {};
-var _importCallbacks = [];
+var stantz = {};
+
+stantz._importWaiting = {};
+stantz._importCallbacks = [];
 
 if( this.console == UNDEF )
 {
@@ -12,12 +14,12 @@ if( this.console == UNDEF )
     };
 }
 
-function _importProcessCallbacks()
+stantz._importProcessCallbacks = function()
 {
     var done = true;
 
-    for( var k in _importWaiting )
-        if( _importWaiting[k] )
+    for( var k in stantz._importWaiting )
+        if( stantz._importWaiting[k] )
         {
             done = false;
             break;
@@ -27,8 +29,8 @@ function _importProcessCallbacks()
     {
         console.info('processing import callbacks');
 
-        var callbacks = _importCallbacks;
-        _importCallbacks = [];
+        var callbacks = stantz._importCallbacks;
+        stantz._importCallbacks = [];
 
         for( var i=0; i<callbacks.length; ++i )
             callbacks[i]();
@@ -41,22 +43,22 @@ if( this.document )
 {
     console.info('using document importing');
 
-    var import = function()
+    stantz.importScripts = function()
     {
         for( var i=0; i<arguments.length; ++i )
-            importOne(arguments[i]);
+            stantz._importOne(arguments[i]);
     }
 
-    var importOne = function(src)
+    stantz._importOne = function(src)
     {
         console.info('importing "'+src+'"');
 
         src = 'stantz/'+src+'.js';
 
-        if( _importWaiting[src] == false )
+        if( stantz._importWaiting[src] == false )
             return;
 
-        _importWaiting[src] = true;
+        stantz._importWaiting[src] = true;
 
         var head = document.getElementsByTagName('head').item(0);
         var script = document.createElement('script');
@@ -66,8 +68,8 @@ if( this.document )
 
         var onDone = function()
         {
-            _importWaiting[src] = false;
-            _importProcessCallbacks();
+            stantz._importWaiting[src] = false;
+            stantz._importProcessCallbacks();
         }
 
         script.onreadystatechange = function()
@@ -82,17 +84,17 @@ if( this.document )
         };
     }
 
-    var onImportsComplete = function(fn)
+    stantz.onImportsComplete = function(fn)
     {
-        _importCallbacks[_importCallbacks.length] = fn;
-        _importProcessCallbacks();
+        stantz._importCallbacks[stantz._importCallbacks.length] = fn;
+        stantz._importProcessCallbacks();
     }
 }
 else
 {
     console.info('using worker importing');
 
-    var import = function()
+    stantz.importScripts = function()
     {
         var scripts = [];
 
@@ -102,37 +104,28 @@ else
         importScripts.apply(null, scripts);
     }
 
-    var onImportsComplete = function(fn)
+    stantz.onImportsComplete = function(fn)
     {
         fn();
     }
 }
 
-var stantz =
+stantz.objects = {};
+
+stantz.materials = {};
+
+stantz.renderers = {};
+
+stantz.mkObj = function(obj, properties)
 {
-    objects:
+    for( k in properties )
     {
-    },
+        obj[k] = properties[k];
+    }
 
-    materials:
-    {
-    },
-
-    renderers:
-    {
-    },
-
-    mkObj: function(obj, properties)
-    {
-        for( k in properties )
-        {
-            obj[k] = properties[k];
-        }
-
-        return obj;
-    },
+    return obj;
 };
 
-import('ray', 'rgba', 'v3');
-import('materials', 'objects', 'output', 'renderers', 'scene');
+stantz.importScripts('ray', 'rgba', 'v3');
+stantz.importScripts('materials', 'objects', 'output', 'renderers', 'scene');
 

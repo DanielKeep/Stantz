@@ -2,7 +2,7 @@
 var buffer;
 
 $(document).ready(
-onImportsComplete
+stantz.onImportsComplete
 (
     function()
     {

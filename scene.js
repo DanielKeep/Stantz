@@ -41,5 +41,5 @@ function setScene()
     scene = stantz.Scene.fromJson(scene.toJson());
 }
 
-onImportsComplete(setScene);
+stantz.onImportsComplete(setScene);
 
