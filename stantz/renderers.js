@@ -23,8 +23,10 @@ stantz.renderers.raytrace =
         var camLeft = camRight.neg();
         var camUp = cam.up.unit();
 
+        /*
         console.info("cF: %o, cR: %o, cU: %o", camForward, camRight, camUp);
         console.info("cL: %o", camLeft);
+        */
 
         // figure out camera vectors
         var fovRad = (Math.PI*cam.fov/180) / 2;
@@ -32,9 +34,11 @@ stantz.renderers.raytrace =
         var fovH = fovRad;
         var fovV = fovRad/params.width*params.height;
 
+        /*
         console.info("fovRad: %o (%o π)", fovRad, fovRad/Math.PI);
         console.info("fovH: %o, fovV: %o", fovH, fovV);
         console.info("vMid: %o", vMid);
+        */
 
         var vLDir = ( ( (camForward).mul(Math.cos(fovH)) )
                 .add( (camLeft).mul(Math.sin(fovH)) ) ).unit();
@@ -42,7 +46,9 @@ stantz.renderers.raytrace =
         var vTDir = ( ( (camForward).mul(Math.cos(fovV)) )
                 .add( (camUp).mul(Math.sin(fovV)) ) ).unit();
 
+        /*
         console.info("vLDir: %o, vTDir: %o", vLDir, vTDir);
+        */
 
         var vLMag = (vMid).dot(vLDir);
         var vTMag = (vMid).dot(vTDir);
@@ -50,17 +56,23 @@ stantz.renderers.raytrace =
         var vL = (vLDir).div(vLMag);
         var vT = (vTDir).div(vTMag);
 
+        /*
         console.info("vL: %o, vT: %o", vL, vT);
+        */
 
         var vH = (camRight).mul( (vL).dot(camLeft) ).mul(2);
         var vV = ((camUp).mul( (vT).dot(camUp) )).neg().mul(2);
 
+        /*
         console.info("vH: %o", vH);
         console.info("vV: %o", vV);
+        */
 
         var vTL = ( (vMid).sub(vH.div(2)) ).sub(vV.div(2)).add(camCenter);
 
+        /*
         console.info("vTL: %o", vTL);
+        */
 
         var vHPp = vH.div(params.width);
         var vVPp = vV.div(params.height);
