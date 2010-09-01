@@ -32,7 +32,6 @@ stantz.renderers.raytrace =
         var fovRad = (Math.PI*cam.fov/180) / 2;
         var vMid = camForward;
         var fovH = fovRad;
-        var fovV = fovRad/params.width*params.height;
 
         /*
         console.info("fovRad: %o (%o π)", fovRad, fovRad/Math.PI);
@@ -43,25 +42,19 @@ stantz.renderers.raytrace =
         var vLDir = ( ( (camForward).mul(Math.cos(fovH)) )
                 .add( (camLeft).mul(Math.sin(fovH)) ) ).unit();
 
-        var vTDir = ( ( (camForward).mul(Math.cos(fovV)) )
-                .add( (camUp).mul(Math.sin(fovV)) ) ).unit();
-
         /*
         console.info("vLDir: %o, vTDir: %o", vLDir, vTDir);
         */
 
         var vLMag = (vMid).dot(vLDir);
-        var vTMag = (vMid).dot(vTDir);
-
         var vL = (vLDir).div(vLMag);
-        var vT = (vTDir).div(vTMag);
 
         /*
         console.info("vL: %o, vT: %o", vL, vT);
         */
 
         var vH = (camRight).mul( (vL).dot(camLeft) ).mul(2);
-        var vV = ((camUp).mul( (vT).dot(camUp) )).neg().mul(2);
+        var vV = (camUp).mul(-vH.mag()*params.height/params.width);
 
         /*
         console.info("vH: %o", vH);
