@@ -74,7 +74,7 @@ if( this.document )
 
         script.onreadystatechange = function()
         {
-            if( js.readyState == 'complete')
+            if( script.readyState == 'complete')
                 onDone();
         };
 
