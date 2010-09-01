@@ -55,6 +55,19 @@ stantz.light.prototype =
 
         return json;
     },
+    
+    _falloffFns:
+    {
+        none: function() { return 1.0; },
+        linear: function(r, dSq) { return Math.max(0.0, 1.0-(r*r/dSq)); },
+        inverse: function(r, dSq) { return r/Math.sqrt(dSq); },
+        inverseSquare: function(r, dSq) { return r/dSq; },
+    },
+
+    vectorToLightFrom: function(v)
+    {
+        return (this.localToWorld(stantz.v3.ZERO)).sub(v);
+    },
 };
 
 stantz.light.fromJson = function(json)
@@ -101,11 +114,73 @@ stantz.lights.point = function()
 {
     this.color = stantz.rgba.WHITE;
     this.radius = 1.0;
-}
+    this.falloff = 'inverseSquare';
+};
 
 stantz.lights.point.prototype =
 {
     __proto__: stantz.light.prototype,
     _aliasName: 'point',
+
+    lightAt: function(i, s)
+    {
+        var v = i.i;
+        var n = i.n;
+
+        var lightPos = this.localToWorld(stantz.v3.ZERO);
+        var vToLight = (lightPos).sub(v);
+        var lightDistSq = ( vToLight ).magSq();
+
+        var ray = stantz.rayFromTo(v, lightPos);
+        var inter = s.castRay(ray, lightDistSq);
+
+        if( inter.obj == null )
+        {
+            var scale = this._falloffFns[this.falloff](this.radius, lightDistSq);
+            var lightColor = (this.color).mulRGB(scale);
+            return lightColor;
+        }
+        else
+            return null;
+    },
+};
+
+/*
+ * Directional light.
+ */
+
+stantz.lights.directional = function()
+{
+    this.color = stantz.rgba.WHITE;
+    this.direction = stantz.v3(0,-1,0);
+};
+
+stantz.lights.directional.prototype =
+{
+    __proto__: stantz.light.prototype,
+    _aliasName: 'directional',
+
+    lightAt: function(i, s)
+    {
+        var v = i.i;
+        var n = i.n;
+
+        /*
+        var dirNeg = this.direction.neg();
+
+        var ray = stantz.ray(v, dirNeg);
+        var inter = s.castRay(ray);
+
+        if( inter.obj != null )
+            return null;
+        */
+
+        return this.color;
+    },
+
+    vectorToLightFrom: function(v)
+    {
+        return this.direction.neg();
+    },
 };
 
