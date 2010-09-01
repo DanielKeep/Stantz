@@ -9,7 +9,42 @@
 <body>
     <h1>Stantz Demo</h1>
     <canvas id="output" width="640" height="480"></canvas>
+    <p>Scene JSON source:
+        <input id="renderScene" type="button" value="Re-render">
+        <span id="renderStatus">Rendering...</span></p>
+    <p><textarea id="sceneSrc" rows='10' cols='60'></textarea></p>
+
     <!--<script type="text/javascript" src="demo.simple.js"></script>-->
     <script type="text/javascript" src="demo.worker.js"></script>
+
+    <script type="text/javascript">
+
+        $(document).ready(
+        stantz.onImportsComplete
+        (
+            function()
+            {
+                var sceneSrc = JSON.stringify(scene.toJson(), null, 2);
+                $("#sceneSrc")[0].value = sceneSrc;
+            }
+        ));
+
+        $("#renderScene").click
+        (
+            function()
+            {
+                var sceneSrc = JSON.parse($("#sceneSrc")[0].value);
+                scene = stantz.Scene.fromJson(sceneSrc);
+                $("#renderStatus").html("Rendering...");
+                renderScene();
+            }
+        );
+
+        var onRenderDone = function()
+        {
+            $("#renderStatus").html("");
+        };
+
+    </script>
 </body>
 </html>
