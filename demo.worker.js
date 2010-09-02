@@ -42,23 +42,50 @@ function renderScene()
             }]);
     };
 
+    // HACK: Workaround for Bug 564332 in Firefox
+    // https://bugzilla.mozilla.org/show_bug.cgi?id=564332
+    if( navigator.product == 'Gecko' )
+    {
+        var tempCanvas = document.createElement('canvas');
+        tempCanvas.width = tileSize;
+        tempCanvas.height = tileSize;
+
+        var tempCtx = tempCanvas.getContext('2d');
+    }
+
     var tileDone = function(tile)
     {
         var id;
         var ctx = canvas.getContext('2d');
 
-        if( ctx.createImageData )
-            id = ctx.createImageData(tile.width, tile.height);
+        // HACK: Workaround for picky WebKit browsers.
+        if( /AppleWebKit/.test(navigator.appVersion) )
+        {
+            if( ctx.createImageData )
+                id = ctx.createImageData(tile.width, tile.height);
+            else
+                id = ctx.getImageData(0, 0, tile.width, tile.height);
+    
+            for( var i=0; i<id.data.length; ++i )
+                id.data[i] = tile.data[i];
+        }
         else
-            id = ctx.getImageData(0, 0, tile.width, tile.height);
-
-        for( var i=0; i<id.data.length; ++i )
-            id.data[i] = tile.data[i];
+            id = tile;
 
         /*console.info('tile (%3d, %3d) done: %o; %o',
                 tile.dx, tile.dy, tile, id);*/
 
-        ctx.putImageData(id, tile.dx, tile.dy);
+        // HACK: Workaround for Bug 564332 in Firefox
+        // https://bugzilla.mozilla.org/show_bug.cgi?id=564332
+        if( navigator.product == "Gecko" )
+        {
+            tempCtx.putImageData(id, 0, 0);
+            ctx.drawImage(tempCanvas, tile.dx, tile.dy);
+        }
+        else
+        {
+            ctx.putImageData(id, tile.dx, tile.dy);
+        }
 
         -- tilesLeft;
 

@@ -6,9 +6,25 @@
     <script type="text/javascript" src="stantz/stantz.js"></script>
     <script type="text/javascript" src="scene.js"></script>
 
+    <script type="text/javascript">
+
+        // This is cheating, I know, but Bespin doesn't like Opera.
+        if( ! this.opera )
+        {
+            document.write(
+                '<link id="bespin_base" href="bespin">\n'
+              + '<link rel="stylesheet" type="text/css" '
+              + 'href="bespin/BespinEmbedded.css">\n'
+              + '<script type="text/javascript"'
+              + 'src="bespin/BespinEmbedded.js"></'+'script>\n' );
+          }
+
+    </script>
+    <!--
     <link id="bespin_base" href="bespin">
     <link rel="stylesheet" type="text/css" href="bespin/BespinEmbedded.css">
     <script type="text/javascript" src="bespin/BespinEmbedded.js"></script>
+    -->
 </head>
 <body>
     <h1>Stantz Demo</h1>
@@ -17,34 +33,55 @@
         <input id="renderScene" type="button" value="Re-render">
         <span id="renderStatus">Rendering...</span></p>
 
-    <div id="sceneSrc" style="height: 20em; width: 95%;"></div>
+    <textarea id="sceneSrc" style="height: 20em; width: 95%;"></textarea>
 
     <!--<script type="text/javascript" src="demo.simple.js"></script>-->
     <script type="text/javascript" src="demo.worker.js"></script>
 
     <script type="text/javascript">
 
-        var editor;
+        var getSceneJson;
 
-        window.onBespinLoad = function()
+        if( this.bespin )
         {
-            console.info("Installing bespin with %o", bespin.useBespin);
-            bespin.useBespin($("#sceneSrc")[0],
+            var editor;
+
+            getSceneJson = function()
             {
-                syntax: "js",
-            }
-            ).then(function(env)
+                return editor.value;
+            };
+
+            window.onBespinLoad = function()
             {
-                editor = env.editor;
-                editor.value = JSON.stringify(scene.toJson(), null, 2);
+                bespin.useBespin($("#sceneSrc")[0],
+                {
+                    syntax: "js",
+                }
+                ).then(function(env)
+                {
+                    editor = env.editor;
+                    editor.value = JSON.stringify(scene.toJson(), null, 2);
+                });
+            };
+        }
+        else
+        {
+            getSceneJson = function()
+            {
+                return $("#sceneSrc")[0].value;
+            };
+
+            stantz.onImportsComplete(function()
+            {
+                $("#sceneSrc")[0].value = JSON.stringify(scene.toJson(), null, 2);
             });
-        };
+        }
 
         $("#renderScene").click
         (
             function()
             {
-                var sceneSrc = JSON.parse(editor.value);
+                var sceneSrc = JSON.parse(getSceneJson());
                 scene = stantz.Scene.fromJson(sceneSrc);
                 $("#renderStatus").html("Rendering...");
                 renderScene();
