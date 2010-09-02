@@ -1,6 +1,11 @@
 
 stantz.output = {};
 
+if( Math.clampByte )
+    throw "Math.clampByte defined; check it!";
+
+Math.clampByte = function(x) { return Math.max(0, Math.min(x, 255)); };
+
 stantz.output.canvas = function(canvas)
 {
     var ctx = canvas.getContext('2d');
@@ -11,11 +16,14 @@ stantz.output.canvas = function(canvas)
 
     this.putPixel = function(x, y, rgba)
     {
+        var clamp = Math.clampByte;
+
         ctx.save();
-        ctx.fillStyle = 'rgba(' + (255 * rgba.r)
-                + ',' + (255 * rgba.g)
-                + ',' + (255 * rgba.b)
-                + ',' + (255 * rgba.a)
+        ctx.fillStyle = 'rgba('
+                      + clamp(255 * rgba.r)
+                + ',' + clamp(255 * rgba.g)
+                + ',' + clamp(255 * rgba.b)
+                + ',' + clamp(255 * rgba.a)
                 + ')';
         ctx.fillRect(x, y, 1, 1);
         ctx.restore();
@@ -37,6 +45,8 @@ stantz.output.Buffer.prototype =
 
     putPixel: function(x, y, rgba)
     {
+        var clamp = Math.clampByte;
+
         var x2 = x - this.dx;
         var y2 = y - this.dy;
 
@@ -47,10 +57,10 @@ stantz.output.Buffer.prototype =
         var i = 4*(x2 + y2*this.width);
         var data = this.data;
 
-        data[i+0] = Math.round(255*rgba.r);
-        data[i+1] = Math.round(255*rgba.g);
-        data[i+2] = Math.round(255*rgba.b);
-        data[i+3] = Math.round(255*rgba.a);
+        data[i+0] = clamp(Math.round(255*rgba.r));
+        data[i+1] = clamp(Math.round(255*rgba.g));
+        data[i+2] = clamp(Math.round(255*rgba.b));
+        data[i+3] = clamp(Math.round(255*rgba.a));
     },
 
     finish: function() {},
@@ -78,12 +88,14 @@ stantz.output.BufferedCanvas.prototype =
 
     putPixel: function(x, y, rgba)
     {
+        var clamp = Math.clampByte;
+
         var i = 4*(x + y*this.width);
         var data = this.buffer.data;
-        data[i+0] = 255*rgba.r;
-        data[i+1] = 255*rgba.g;
-        data[i+2] = 255*rgba.b;
-        data[i+3] = 255*rgba.a;
+        data[i+0] = clamp(255*rgba.r);
+        data[i+1] = clamp(255*rgba.g);
+        data[i+2] = clamp(255*rgba.b);
+        data[i+3] = clamp(255*rgba.a);
     },
 
     finish: function()
